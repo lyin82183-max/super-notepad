@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Notepad</title>
+  <meta name="description" content="超级记事本：本地记事 + 文件归档 + 本地整理。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="page">
+  <div class="app" id="appShell">
+    <header class="topbar">
+      <div class="brand" id="brandHome" role="button" tabindex="0">
+        <div class="logo">SN</div>
+        <div class="brand-title">
+          <strong>Super Notepad</strong>
+          <small id="workspaceSubline">超级记事本 · 本地写作台</small>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="m21 21-4.35-4.35M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z"/></svg>
+        </span>
+        <input id="globalSearch" type="text" placeholder="搜索笔记、标签、附件…" />
+      </div>
+
+      <div class="top-actions">
+        <button class="btn ghost" id="toggleSidebarBtn" type="button" title="切换笔记列表" aria-label="切换笔记列表" aria-controls="sidebarPanel" aria-expanded="true">列表</button>
+        <button class="btn ghost" id="themeToggleBtn" type="button" title="切换深浅色" aria-label="切换深浅色">主题</button>
+        <button class="btn primary" id="newNoteBtn" type="button">新建笔记</button>
+        <details class="more-menu" id="topMoreMenu">
+          <summary class="btn secondary" title="更多操作">更多</summary>
+          <div class="more-menu-panel" role="menu">
+            <button id="dailyNoteBtn" type="button" role="menuitem">每日笔记</button>
+            <button id="templatesBtn" type="button" role="menuitem">模板</button>
+            <button id="uploadBtn" type="button" role="menuitem">上传文件</button>
+            <button id="newFolderBtn" type="button" role="menuitem">新建文件夹</button>
+            <button id="commandBtnTop" type="button" role="menuitem">命令菜单</button>
+          </div>
+        </details>
+      </div>
+    </header>
+
+    <div class="main" id="mainLayout">
+      <aside class="rail" id="railNav" aria-label="主导航">
+        <button class="rail-item active" data-view="notes" title="笔记列表与编辑" aria-label="笔记"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h7l3 3v13H7V4Z"/><path d="M14 4v4h3M9.5 12h5M9.5 15.5h5"/></svg></button>
+        <button class="rail-item" data-view="files" title="文件库：管理附件与本地文件" aria-label="文件库"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h6l1.8 2H20v9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5V7Z"/></svg></button>
+        <button class="rail-item" data-view="search" title="搜索中心：全文与筛选搜索" aria-label="搜索"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 20-4-4M10.5 17a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z"/></svg></button>
+        <button class="rail-item" data-view="ai" title="本地整理：摘要、标签与大纲建议" aria-label="本地整理"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 13.9 9l5.6 2-5.6 2L12 18.5 10.1 13l-5.6-2 5.6-2L12 3.5Z"/></svg></button>
+        <button class="rail-item" data-view="trash" title="回收站：恢复已删笔记和文件" aria-label="回收站"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 7h12M9 7V4h6v3M8 10v9M12 10v9M16 10v9M7 7l1 14h8l1-14"/></svg></button>
+        <div class="rail-bottom">
+          <button class="rail-item" data-view="settings" title="设置：主题、密码、同步与备份" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6Z"/><path d="M18.6 13.2v-2.4l-2-.6a5.6 5.6 0 0 0-.7-1.6l1-1.8-1.7-1.7-1.8 1a5.6 5.6 0 0 0-1.6-.7l-.6-2H8.8l-.6 2a5.6 5.6 0 0 0-1.6.7l-1.8-1-1.7 1.7 1 1.8a5.6 5.6 0 0 0-.7 1.6l-2 .6v2.4l2 .6c.2.6.4 1.1.7 1.6l-1 1.8 1.7 1.7 1.8-1c.5.3 1 .6 1.6.7l.6 2h2.4l.6-2c.6-.2 1.1-.4 1.6-.7l1.8 1 1.7-1.7-1-1.8c.3-.5.6-1 .7-1.6l2-.6Z"/></svg></button>
+        </div>
+      </aside>
+
+      <aside class="sidebar" id="sidebarPanel">
+        <div class="sidebar-topline compact">
+          <strong id="workspaceName" title="本地工作区">我的工作区</strong>
+          <button class="sidebar-add" id="quickNoteBtn" type="button" title="快速新建笔记" aria-label="快速新建笔记">＋</button>
+        </div>
+
+        <div class="note-list-toolbar">
+          <div class="filter-chips" id="smartTags" role="toolbar" aria-label="笔记筛选"></div>
+          <details class="filter-more" id="filterMoreTags">
+            <summary title="按标签类筛选">标签</summary>
+            <div class="filter-more-body" id="smartTagExtras"></div>
+          </details>
+        </div>
+
+        <div class="side-section note-list-section">
+          <div class="section-head compact">
+            <h3>笔记</h3>
+            <button class="link-btn" id="showAllNotesBtn" type="button" title="清除筛选并显示全部笔记">全部</button>
+          </div>
+          <div class="note-list" id="noteList"></div>
+        </div>
+      </aside>
+
+      <section class="editor-wrap">
+        <div class="editor-toolbar format-toolbar">
+          <div class="toolbar-left">
+            <button class="fmt-btn" id="boldBtn" type="button" title="加粗">B</button>
+            <button class="fmt-btn" id="headingBtn" type="button" title="标题">H</button>
+            <button class="fmt-btn" id="listBtn" type="button" title="列表">• ≡</button>
+            <button class="fmt-btn" id="todoBtn" type="button" title="待办">☑</button>
+            <button class="fmt-btn" id="codeBtn" type="button" title="代码">&lt;/&gt;</button>
+            <button class="fmt-btn" id="linkBtn" type="button" title="链接">🔗</button>
+            <button class="fmt-btn" id="imageBtn" type="button" title="图片">▣</button>
+            <span class="toolbar-divider"></span>
+            <button class="tool-chip active" data-mode="rich" type="button">编辑</button>
+            <button class="tool-chip" data-mode="markdown" type="button">Markdown</button>
+            <button class="tool-chip" id="commandBtn" type="button">/</button>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn ghost" id="autosaveBtn" type="button">自动保存</button>
+            <button class="btn ghost context-toggle" id="contextPanelBtn" type="button" aria-controls="contextPanel" aria-expanded="false">文件</button>
+            <button class="btn ghost" id="exportBtn" type="button">导出</button>
+            <button class="btn secondary" id="aiOrganizeBtn" type="button">本地整理</button>
+          </div>
+        </div>
+
+        <div class="note-tabs" id="noteTabs" hidden></div>
+        <div class="editor-surface" id="editorSurface"></div>
+
+        <div class="status-bar" id="statusBar" aria-live="polite">
+          <span id="saveStatus">已同步</span>
+          <span class="status-sep">·</span>
+          <span id="wordCount">0 字</span>
+          <span class="status-sep">·</span>
+          <span id="readTime">约 0 分钟</span>
+          <span class="status-spacer"></span>
+          <span id="lastAction" class="status-quiet">准备就绪</span>
+        </div>
+      </section>
+
+      <aside class="rightbar" id="contextPanel" aria-label="文件与本地整理面板" aria-hidden="true">
+        <div class="rightbar-head">
+          <div>
+            <span>当前工作区</span>
+            <strong>文件与整理</strong>
+          </div>
+          <div class="rightbar-actions">
+            <button class="panel-pin" id="contextPanelPinBtn" type="button" aria-pressed="false" title="固定面板">固定</button>
+            <button class="panel-close" id="contextPanelCloseBtn" type="button" aria-label="关闭文件面板">×</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>文件管理</h3>
+          <div class="storage">
+            <div class="stats-row">
+              <span>已使用</span>
+              <strong id="storageUsed">0 KB</strong>
+            </div>
+            <div class="progress"><div id="storageBar"></div></div>
+            <div class="stats-row">
+              <span>文件总数</span>
+              <strong id="totalFilesMirror">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-head">
+            <h3>文件夹</h3>
+            <button class="link-btn" id="manageFoldersBtn" type="button">管理</button>
+          </div>
+          <div class="folder-list" id="folderList"></div>
+        </div>
+
+        <div class="panel">
+          <div class="section-head">
+            <h3>最近文件</h3>
+            <button class="link-btn" id="allFilesBtn" type="button">全部</button>
+          </div>
+          <div class="file-list" id="recentFiles"></div>
+        </div>
+
+        <div class="ai-card">
+          <h4>本地整理建议</h4>
+          <p id="aiSuggestionText">打开笔记后可生成摘要、自动标签、附件提取和大纲（基于本地规则，非在线大模型）。</p>
+          <div class="ai-actions">
+            <button type="button" data-ai-action="summary">生成摘要</button>
+            <button type="button" data-ai-action="tags">自动标签</button>
+            <button type="button" data-ai-action="attachments">附件提取</button>
+            <button type="button" data-ai-action="outline">整理成大纲</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<input id="fileInput" type="file" multiple style="display:none" />
+<div class="context-scrim" id="contextScrim" hidden></div>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="modalTitle">操作</h3>
+      <button class="icon-close" id="modalCloseBtn" type="button">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">操作完成</div>
+
+<div class="command-palette" id="commandPalette" hidden>
+  <div class="command-palette-card">
+    <input id="commandPaletteInput" type="text" placeholder="搜索命令或笔记…" autocomplete="off" />
+    <div class="command-palette-list" id="commandPaletteList"></div>
+    <div class="command-palette-hint">↑↓ 选择 · Enter 执行 · Esc 关闭 · Ctrl+K / Ctrl+Shift+P</div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="./vendor/highlight/github.min.css" />
+<script src="./app.js"></script>
+</body>
+</html>

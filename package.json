@@ -1,0 +1,116 @@
+{
+  "name": "super-notepad-desktop",
+  "version": "1.0.0",
+  "description": "Super Notepad desktop prototype",
+  "author": "lyin82183-max",
+  "license": "MIT",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "smoke": "electron smoke-electron.js",
+    "build": "electron-builder --win nsis portable"
+  },
+  "build": {
+    "appId": "local.supernotepad.desktop",
+    "productName": "Super Notepad",
+    "copyright": "Copyright (c) 2026",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "styles.css",
+      "app.js",
+      "full-features.js",
+      "ocr-worker.js",
+      "ocr-selftest.js",
+      "vendor/**/*",
+      "node_modules/highlight.js/**/*",
+      "node_modules/tesseract.js/**/*",
+      "node_modules/tesseract.js-core/**/*",
+      "node_modules/idb-keyval/**/*",
+      "node_modules/is-electron/**/*",
+      "node_modules/is-url/**/*",
+      "node_modules/node-fetch/**/*",
+      "node_modules/regenerator-runtime/**/*",
+      "node_modules/wasm-feature-detect/**/*",
+      "node_modules/zlibjs/**/*",
+      "extra-features.js",
+      "preload-quick.js",
+      "quick-note.html",
+      "node_modules/iconv-lite/**/*",
+      "node_modules/safer-buffer/**/*",
+      "node_modules/mammoth/**/*",
+      "node_modules/docx/**/*",
+      "node_modules/jszip/**/*",
+      "node_modules/xml/**/*",
+      "node_modules/xml-js/**/*",
+      "node_modules/underscore/**/*",
+      "node_modules/base64-js/**/*",
+      "node_modules/immediate/**/*",
+      "node_modules/lie/**/*",
+      "node_modules/pako/**/*",
+      "node_modules/setimmediate/**/*",
+      "node_modules/lop/**/*",
+      "node_modules/dingbat-to-unicode/**/*",
+      "node_modules/duck/**/*",
+      "node_modules/option/**/*",
+      "node_modules/xmlbuilder/**/*",
+      "node_modules/hash.js/**/*",
+      "node_modules/minimalistic-assert/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "artifactName": "${productName}-Setup-${version}-${arch}.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Super Notepad"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}-${arch}.${ext}"
+    },
+    "fileAssociations": [
+      {
+        "ext": "md",
+        "name": "Markdown",
+        "role": "Editor"
+      },
+      {
+        "ext": "txt",
+        "name": "Text",
+        "role": "Editor"
+      },
+      {
+        "ext": "json",
+        "name": "JSON",
+        "role": "Editor"
+      },
+      {
+        "ext": "log",
+        "name": "Log",
+        "role": "Viewer"
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "highlight.js": "^11.11.1",
+    "tesseract.js": "^5.1.1",
+    "iconv-lite": "^0.6.3",
+    "mammoth": "^1.8.0",
+    "docx": "^8.5.0"
+  }
+}

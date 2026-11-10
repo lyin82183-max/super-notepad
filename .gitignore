@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+
+# electron-builder output
+dist/
+
+# Ad-hoc smoke tests and their output
+smoke-out/
+smoke-out*/
+smoke-*.js
+run-smoke*
+write_smoke_bat.py
+
+# Screenshots and local verification images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime / user data (if the app is launched from this folder)
+userdata/
+data.json
+runtime-config.json
+ai-config.bin
+uploads/
+backups/
+tess-cache/
+*.bak
+
+# OS / editor
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+
+# Python leftovers
+__pycache__/
+*.pyc

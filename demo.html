@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Notepad - Demo</title>
+  <meta name="description" content="超级记事本 UI 原型演示页。">
+  <style>
+@charset "UTF-8";
+
+:root{
+  --bg:#f4f7fb;
+  --bg2:#eef3fb;
+  --panel:#ffffff;
+  --panel-2:#f9fbff;
+  --line:#e5ebf5;
+  --line-2:#d9e2f0;
+  --text:#1f2a37;
+  --muted:#6b7b92;
+  --blue:#4f7cff;
+  --blue-2:#7aa2ff;
+  --cyan:#32d4ff;
+  --violet:#8b6dff;
+  --green:#22c55e;
+  --orange:#ffb547;
+  --red:#ef5d7a;
+  --shadow:0 18px 48px rgba(31,42,55,.08);
+  --radius:22px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,"PingFang SC","Microsoft YaHei",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(79,124,255,.14), transparent 22%),
+    radial-gradient(circle at 100% 0%, rgba(50,212,255,.12), transparent 18%),
+    linear-gradient(180deg, #f7faff 0%, var(--bg) 42%, var(--bg2) 100%);
+  color:var(--text);
+}
+a{text-decoration:none;color:inherit}
+button,input,textarea{font:inherit}
+
+.page{
+  min-height:100vh;
+  padding:22px;
+}
+.app{
+  min-height:calc(100vh - 44px);
+  background:rgba(255,255,255,.55);
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:30px;
+  box-shadow:0 24px 80px rgba(45,58,79,.12);
+  overflow:hidden;
+  backdrop-filter: blur(14px);
+}
+.topbar{
+  height:78px;
+  display:grid;
+  grid-template-columns: 250px 1fr auto;
+  align-items:center;
+  gap:18px;
+  padding:0 24px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.84));
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logo{
+  width:44px;height:44px;border-radius:14px;
+  display:grid;place-items:center;
+  color:white;font-weight:900;
+  background:linear-gradient(135deg,var(--blue),var(--violet));
+  box-shadow:0 12px 24px rgba(79,124,255,.26);
+}
+.brand-title{display:flex;flex-direction:column;gap:4px}
+.brand-title strong{font-size:18px;line-height:1}
+.brand-title small{font-size:12px;color:var(--muted);line-height:1}
+
+.search-wrap{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 16px;
+  height:50px;
+  border-radius:16px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.search-wrap span{color:var(--muted)}
+.search-wrap input{
+  border:0;outline:none;background:transparent;width:100%;
+  color:var(--text);
+}
+.top-actions{display:flex;align-items:center;gap:10px}
+.btn{
+  height:44px;padding:0 16px;border-radius:14px;border:1px solid transparent;
+  display:inline-flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:.2s transform,.2s box-shadow,.2s background,.2s border-color;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--violet));
+  box-shadow:0 12px 26px rgba(79,124,255,.24);
+}
+.btn.secondary{
+  background:#fff;border-color:var(--line);
+  color:var(--text);
+}
+.btn.icon{width:44px;padding:0;background:#fff;border-color:var(--line)}
+.main{
+  display:grid;
+  grid-template-columns: 82px 300px 1fr 320px;
+  min-height:calc(100vh - 122px);
+}
+.rail{
+  border-right:1px solid var(--line);
+  background:linear-gradient(180deg, #fcfdff, #f7faff);
+  padding:18px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+}
+.rail-item{
+  width:52px;height:52px;border-radius:16px;
+  display:grid;place-items:center;
+  color:var(--muted);font-size:20px;
+  border:1px solid transparent;
+  transition:.2s;
+}
+.rail-item.active{
+  color:var(--blue);
+  background:#fff;
+  border-color:var(--line);
+  box-shadow:var(--shadow);
+}
+.rail-bottom{margin-top:auto}
+
+.sidebar{
+  padding:18px;
+  border-right:1px solid var(--line);
+  background:rgba(255,255,255,.6);
+}
+.workspace-card,
+.panel,
+.note-item,
+.folder-item,
+.attach-card,
+.file-row,
+.ai-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow: var(--shadow);
+}
+.workspace-card{
+  padding:16px;
+  display:grid;gap:14px;
+}
+.user-line{display:flex;align-items:center;justify-content:space-between}
+.user{
+  display:flex;align-items:center;gap:12px
+}
+.avatar{
+  width:42px;height:42px;border-radius:14px;
+  display:grid;place-items:center;
+  color:#fff;font-weight:800;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+}
+.badge{
+  padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700;
+  color:var(--blue);background:rgba(79,124,255,.08);
+}
+.side-section{margin-top:18px}
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.section-head h3{
+  margin:0;font-size:15px;
+}
+.section-head a,.section-head span{font-size:12px;color:var(--muted)}
+.side-btn{
+  width:100%;
+  height:46px;
+  border:1px dashed var(--line-2);
+  border-radius:16px;
+  background:linear-gradient(180deg,#f8fbff,#f3f7ff);
+  color:var(--blue);font-weight:700;
+  cursor:pointer;
+}
+.smart-tags{
+  display:flex;flex-wrap:wrap;gap:8px;
+}
+.smart-tags span{
+  padding:8px 10px;border-radius:999px;font-size:12px;font-weight:700;
+  background:#fff;border:1px solid var(--line);color:var(--muted);
+}
+.note-list{display:grid;gap:10px}
+.note-item{
+  padding:14px;cursor:pointer;transition:.2s;
+}
+.note-item.active{
+  border-color:#cfe0ff;
+  box-shadow:0 10px 22px rgba(79,124,255,.12);
+}
+.note-item strong{display:block;font-size:14px}
+.note-item p{
+  margin:8px 0 10px;
+  color:var(--muted);font-size:12px;line-height:1.6;
+}
+.note-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  color:var(--muted);font-size:12px;
+}
+.editor-wrap{
+  padding:18px;
+  display:flex;flex-direction:column;
+  gap:16px;
+  min-width:0;
+}
+.editor-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+}
+.toolbar-left,.toolbar-right{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.tool-chip{
+  padding:8px 12px;border-radius:999px;
+  background:#fff;border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;
+}
+.editor-surface{
+  flex:1;
+  min-height:760px;
+  padding:24px;
+  border-radius:28px;
+  background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(249,251,255,.98));
+  border:1px solid var(--line);
+  box-shadow: var(--shadow);
+  position:relative;
+}
+.editor-surface.dragover{
+  border-color:#bcd2ff;
+  box-shadow:0 0 0 4px rgba(79,124,255,.10), var(--shadow);
+}
+.note-header{
+  display:grid;
+  gap:12px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--line);
+}
+.note-title{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+}
+.note-title h1{
+  margin:0;font-size:34px;line-height:1.15;letter-spacing:-.02em;
+}
+.note-subline{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  color:var(--muted);font-size:13px;
+}
+.pill{
+  padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700;
+  background:rgba(139,109,255,.08);color:var(--violet);
+}
+.note-body{
+  display:grid;gap:18px;
+  padding-top:18px;
+}
+.callout{
+  display:grid;grid-template-columns: auto 1fr auto;
+  align-items:center;gap:14px;
+  padding:16px 18px;
+  border-radius:20px;
+  background:linear-gradient(135deg, rgba(79,124,255,.08), rgba(50,212,255,.08));
+  border:1px solid rgba(79,124,255,.12);
+}
+.callout-icon{
+  width:42px;height:42px;border-radius:14px;
+  display:grid;place-items:center;
+  background:#fff;color:var(--blue);
+  border:1px solid rgba(79,124,255,.12);
+}
+.callout strong{display:block;font-size:14px}
+.callout small{display:block;color:var(--muted);margin-top:4px}
+.content-card{
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:var(--panel-2);
+}
+.content-card h4{
+  margin:0 0 12px;font-size:15px;
+}
+.content-card p,
+.content-card li{
+  color:#425167;line-height:1.85;font-size:15px;
+}
+.content-card ul{margin:0;padding-left:18px}
+.attach-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.attach-grid{
+  display:grid;grid-template-columns: repeat(3, minmax(0, 1fr));gap:12px;
+  margin-top:12px;
+}
+.attach-card{
+  padding:14px;display:grid;gap:12px;
+  min-width:0;
+}
+.file-top{
+  display:flex;align-items:center;gap:10px;min-width:0;
+}
+.file-icon{
+  width:44px;height:44px;border-radius:14px;
+  display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:12px;
+  flex:0 0 auto;
+}
+.file-icon.pdf{background:linear-gradient(135deg,#ff7b7b,#ef5d7a)}
+.file-icon.doc{background:linear-gradient(135deg,#4f7cff,#6da7ff)}
+.file-icon.img{background:linear-gradient(135deg,#22c55e,#34d399)}
+.file-icon.xls{background:linear-gradient(135deg,#0ea5a0,#2dd4bf)}
+.file-icon.zip{background:linear-gradient(135deg,#ffb547,#ff9f1c)}
+.file-icon.file{background:linear-gradient(135deg,#8b6dff,#b08fff)}
+.file-name{
+  min-width:0;
+}
+.file-name strong{
+  display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.file-name small{display:block;color:var(--muted);margin-top:4px}
+.file-tags{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+}
+.tiny-tag{
+  padding:6px 8px;border-radius:999px;font-size:11px;font-weight:700;
+  background:#f3f7ff;border:1px solid var(--line);color:var(--muted);
+}
+.attach-actions{
+  display:flex;gap:8px;
+}
+.mini-btn{
+  flex:1;height:34px;border-radius:12px;border:1px solid var(--line);
+  background:#fff;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;
+}
+.empty-state{
+  padding:28px 18px;border:1px dashed var(--line-2);border-radius:18px;
+  text-align:center;color:var(--muted);
+  background:linear-gradient(180deg,#fbfdff,#f6f9ff);
+}
+.rightbar{
+  padding:18px;
+  border-left:1px solid var(--line);
+  background:rgba(255,255,255,.56);
+  display:grid;gap:16px;align-content:start;
+}
+.panel{
+  padding:16px;
+}
+.panel h3{margin:0 0 14px;font-size:15px}
+.storage{
+  display:grid;gap:10px;
+}
+.progress{
+  height:10px;border-radius:999px;background:#eef2fa;overflow:hidden
+}
+.progress > div{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--blue),var(--cyan),var(--violet));
+  border-radius:inherit;
+  transition:width .25s ease;
+}
+.stats-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font-size:13px;color:var(--muted);
+}
+.folder-list,.file-list{
+  display:grid;gap:10px
+}
+.folder-item,
+.file-row{
+  padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.folder-left,.file-left{
+  display:flex;align-items:center;gap:10px;min-width:0;
+}
+.folder-badge{
+  width:34px;height:34px;border-radius:12px;
+  display:grid;place-items:center;
+  background:#f4f7ff;color:var(--blue);font-size:14px;border:1px solid var(--line);
+}
+.folder-name strong,
+.file-left strong{
+  display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.folder-name small,
+.file-left small{
+  display:block;font-size:12px;color:var(--muted);margin-top:4px;
+}
+.ai-card{
+  padding:16px;
+  display:grid;gap:12px;
+  background:linear-gradient(135deg, rgba(79,124,255,.08), rgba(139,109,255,.08), rgba(50,212,255,.07));
+}
+.ai-card h4{margin:0;font-size:15px}
+.ai-card p{margin:0;color:#425167;line-height:1.8;font-size:14px}
+.ai-actions{
+  display:flex;flex-wrap:wrap;gap:8px;
+}
+.ai-actions span{
+  padding:8px 10px;border-radius:999px;background:#fff;border:1px solid rgba(79,124,255,.16);
+  color:var(--blue);font-size:12px;font-weight:700;
+}
+.statusbar{
+  height:44px;padding:0 20px;border-top:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  color:var(--muted);font-size:13px;background:rgba(255,255,255,.72);
+}
+.status-left,.status-right{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.dot{
+  width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 0 6px rgba(34,197,94,.10);
+}
+.kbd{
+  padding:4px 7px;border-radius:8px;background:#fff;border:1px solid var(--line);font-size:12px;color:var(--muted)
+}
+.toast{
+  position:fixed;right:26px;bottom:28px;z-index:99;
+  padding:14px 16px;border-radius:16px;
+  background:#1f2a37;color:#fff;
+  box-shadow:0 20px 44px rgba(31,42,55,.22);
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s;
+}
+.toast.show{opacity:1;transform:translateY(0)}
+@media (max-width: 1480px){
+  .main{grid-template-columns: 82px 280px 1fr}
+  .rightbar{display:none}
+}
+@media (max-width: 1120px){
+  .topbar{grid-template-columns: 1fr; height:auto; padding:18px}
+  .main{grid-template-columns: 82px 1fr}
+  .sidebar{display:none}
+  .attach-grid{grid-template-columns: repeat(2, minmax(0, 1fr))}
+}
+@media (max-width: 760px){
+  .page{padding:10px}
+  .app{min-height:calc(100vh - 20px); border-radius:22px}
+  .main{grid-template-columns: 1fr}
+  .rail{display:none}
+  .editor-wrap{padding:12px}
+  .editor-surface{padding:18px; min-height:640px}
+  .attach-grid{grid-template-columns: 1fr}
+  .callout{grid-template-columns: 1fr; align-items:flex-start}
+  .note-title{flex-direction:column}
+}
+
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">SN</div>
+        <div class="brand-title">
+          <strong>Super Notepad</strong>
+          <small>超级记事本 · 记事 + 文件管理 + AI 整理</small>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <span>⌕</span>
+        <input type="text" placeholder="搜索笔记、标签、附件、文件内容..." />
+      </div>
+
+      <div class="top-actions">
+        <button class="btn secondary" id="uploadBtn" type="button">上传文件</button>
+        <button class="btn secondary" type="button">新建文件夹</button>
+        <button class="btn primary" type="button">新建笔记</button>
+      </div>
+    </header>
+
+    <div class="main">
+      <aside class="rail">
+        <a class="rail-item active" href="#" title="首页">⌂</a>
+        <a class="rail-item" href="#" title="笔记">📝</a>
+        <a class="rail-item" href="#" title="文件">🗂</a>
+        <a class="rail-item" href="#" title="收藏">★</a>
+        <a class="rail-item" href="#" title="搜索">⌕</a>
+        <a class="rail-item" href="#" title="AI">✦</a>
+        <div class="rail-bottom">
+          <a class="rail-item" href="#" title="设置">⚙</a>
+        </div>
+      </aside>
+
+      <aside class="sidebar">
+        <div class="workspace-card">
+          <div class="user-line">
+            <div class="user">
+              <div class="avatar">YL</div>
+              <div>
+                <strong>我的工作区</strong>
+                <div style="font-size:12px;color:var(--muted);margin-top:4px;">个人版 · 已同步</div>
+              </div>
+            </div>
+            <span class="badge">在线</span>
+          </div>
+
+          <button class="side-btn" type="button">＋ 快速新建笔记</button>
+        </div>
+
+        <div class="side-section">
+          <div class="section-head">
+            <h3>智能分组</h3>
+            <span>自动整理</span>
+          </div>
+          <div class="smart-tags">
+            <span>全部笔记</span>
+            <span>最近编辑</span>
+            <span>带附件</span>
+            <span>会议纪要</span>
+            <span>灵感记录</span>
+            <span>已收藏</span>
+          </div>
+        </div>
+
+        <div class="side-section">
+          <div class="section-head">
+            <h3>笔记列表</h3>
+            <a href="#">查看全部</a>
+          </div>
+          <div class="note-list">
+            <div class="note-item active">
+              <strong>超级记事本产品方案</strong>
+              <p>优化方向：记事本 + 文件管理，支持拖拽文件到笔记中，自动生成附件卡片与文件引用。</p>
+              <div class="note-meta">
+                <span>今天 10:36</span>
+                <span>4 个附件</span>
+              </div>
+            </div>
+
+            <div class="note-item">
+              <strong>竞品功能拆解</strong>
+              <p>对比传统笔记产品的文件能力、搜索能力、AI 整理能力和同步能力。</p>
+              <div class="note-meta">
+                <span>昨天 20:12</span>
+                <span>2 个附件</span>
+              </div>
+            </div>
+
+            <div class="note-item">
+              <strong>用户访谈纪要</strong>
+              <p>记录用户对“记事 + 文件归档 + 拖拽引用”的真实需求场景。</p>
+              <div class="note-meta">
+                <span>昨天 18:05</span>
+                <span>1 个附件</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="editor-wrap">
+        <div class="editor-toolbar">
+          <div class="toolbar-left">
+            <span class="tool-chip">富文本</span>
+            <span class="tool-chip">Markdown</span>
+            <span class="tool-chip">/ 命令菜单</span>
+            <span class="tool-chip">自动保存</span>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn icon" type="button" title="加粗">B</button>
+            <button class="btn icon" type="button" title="待办">☑</button>
+            <button class="btn icon" type="button" title="图片">▣</button>
+            <button class="btn icon" type="button" title="代码">&lt;/&gt;</button>
+            <button class="btn secondary" type="button">导出</button>
+            <button class="btn primary" type="button">AI 整理</button>
+          </div>
+        </div>
+
+        <div class="editor-surface" id="editorSurface">
+          <div class="note-header">
+            <div class="note-title">
+              <div>
+                <h1>超级记事本产品方案</h1>
+                <div class="note-subline">
+                  <span>最后编辑：今天 10:36</span>
+                  <span>·</span>
+                  <span>创建者：墨先生</span>
+                  <span class="pill">产品规划</span>
+                  <span class="pill">文件管理</span>
+                  <span class="pill">拖拽上传</span>
+                </div>
+              </div>
+              <button class="btn secondary" id="uploadBtn2" type="button">附加文件</button>
+            </div>
+          </div>
+
+          <div class="note-body">
+            <div class="callout" id="dropZone">
+              <div class="callout-icon">⇪</div>
+              <div>
+                <strong>把文件直接拖到笔记里</strong>
+                <small>拖拽后自动附加到当前笔记，并同步进入文件管理。支持 PDF、图片、Office、ZIP 等。</small>
+              </div>
+              <button class="btn primary" id="chooseInCallout" type="button">选择文件</button>
+            </div>
+
+            <div class="content-card">
+              <h4>产品定位</h4>
+              <p>把“记录”和“归档”合在一个界面里：左边管理笔记，右边管理文件，中间专注写作。文件可以直接拖进笔记正文，自动生成附件卡片，也能在文件库里长期归档和复用。</p>
+            </div>
+
+            <div class="content-card">
+              <h4>核心价值</h4>
+              <ul>
+                <li>用记事本方式快速记录，不必切到复杂文档系统。</li>
+                <li>文件与笔记天然关联，不再分散在网盘、桌面和聊天记录里。</li>
+                <li>支持拖拽上传、文件引用、文件预览、附件搜索和 AI 摘要。</li>
+                <li>保持“记事本”边界，不做复杂项目管理，只做好记录、整理、搜索和归档。</li>
+              </ul>
+            </div>
+
+            <div class="content-card">
+              <div class="attach-head">
+                <h4 style="margin:0">当前笔记附件</h4>
+                <div style="display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px">
+                  <span>拖拽文件即可新增</span>
+                  <span>·</span>
+                  <span><strong id="totalFiles">0</strong> 个文件</span>
+                  <span>·</span>
+                  <span><strong id="totalSize">0 KB</strong></span>
+                </div>
+              </div>
+
+              <div class="attach-grid" id="attachGrid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="rightbar">
+        <div class="panel">
+          <h3>文件管理</h3>
+          <div class="storage">
+            <div class="stats-row">
+              <span>已使用</span>
+              <strong id="storageUsed">0 KB</strong>
+            </div>
+            <div class="progress"><div id="storageBar"></div></div>
+            <div class="stats-row">
+              <span>文件总数</span>
+              <strong id="totalFilesMirror">自动同步</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-head" style="margin-bottom:14px">
+            <h3>文件夹</h3>
+            <a href="#">管理</a>
+          </div>
+          <div class="folder-list">
+            <div class="folder-item">
+              <div class="folder-left">
+                <div class="folder-badge">📁</div>
+                <div class="folder-name">
+                  <strong>产品文档</strong>
+                  <small>12 个文件</small>
+                </div>
+              </div>
+              <span class="tiny-tag">默认</span>
+            </div>
+            <div class="folder-item">
+              <div class="folder-left">
+                <div class="folder-badge">🖼</div>
+                <div class="folder-name">
+                  <strong>设计素材</strong>
+                  <small>34 个文件</small>
+                </div>
+              </div>
+              <span class="tiny-tag">图片</span>
+            </div>
+            <div class="folder-item">
+              <div class="folder-left">
+                <div class="folder-badge">🧾</div>
+                <div class="folder-name">
+                  <strong>合同与票据</strong>
+                  <small>8 个文件</small>
+                </div>
+              </div>
+              <span class="tiny-tag">文档</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-head" style="margin-bottom:14px">
+            <h3>最近文件</h3>
+            <a href="#">全部</a>
+          </div>
+          <div class="file-list" id="recentFiles"></div>
+        </div>
+
+        <div class="ai-card">
+          <h4>AI 整理建议</h4>
+          <p>已识别当前笔记为“产品规划类”。建议：生成摘要、自动标签、从附件提取关键信息、生成 PRD 大纲。</p>
+          <div class="ai-actions">
+            <span>生成摘要</span>
+            <span>自动标签</span>
+            <span>附件提取</span>
+            <span>整理成大纲</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="statusbar">
+      <div class="status-left">
+        <span style="display:inline-flex;align-items:center;gap:10px"><i class="dot"></i>同步正常</span>
+        <span>拖拽文件到笔记后，会同时写入“当前笔记附件”和“文件管理”。</span>
+      </div>
+      <div class="status-right">
+        <span id="lastAction">最近操作：打开产品方案</span>
+        <span>快捷键 <span class="kbd">Ctrl</span> + <span class="kbd">N</span> 新建笔记</span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<input id="fileInput" type="file" multiple style="display:none" />
+
+<div class="toast" id="toast">已附加文件</div>
+
+<script>
+(() => {
+  const state = {
+    attachments: [
+      { name: "产品定位.pdf", sizeKB: 2460, type: "pdf", category: "文档", from: "当前笔记", date: "今天 09:18" },
+      { name: "竞品界面截图.png", sizeKB: 1180, type: "img", category: "图片", from: "拖拽上传", date: "今天 09:20" },
+      { name: "用户访谈纪要.docx", sizeKB: 326, type: "doc", category: "文档", from: "文件库引用", date: "昨天 18:06" }
+    ]
+  };
+
+  const attachGrid = document.getElementById("attachGrid");
+  const recentFiles = document.getElementById("recentFiles");
+  const dropZone = document.getElementById("dropZone");
+  const editorSurface = document.getElementById("editorSurface");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const uploadBtn2 = document.getElementById("uploadBtn2");
+  const chooseInCallout = document.getElementById("chooseInCallout");
+  const fileInput = document.getElementById("fileInput");
+  const totalFilesEl = document.getElementById("totalFiles");
+  const totalSizeEl = document.getElementById("totalSize");
+  const storageUsedEl = document.getElementById("storageUsed");
+  const progressEl = document.getElementById("storageBar");
+  const toastEl = document.getElementById("toast");
+  const lastActionEl = document.getElementById("lastAction");
+
+  function extType(name) {
+    const ext = name.split(".").pop()?.toLowerCase() || "";
+    if (["pdf"].includes(ext)) return "pdf";
+    if (["doc", "docx", "txt", "md", "rtf"].includes(ext)) return "doc";
+    if (["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext)) return "img";
+    if (["xls", "xlsx", "csv"].includes(ext)) return "xls";
+    if (["zip", "rar", "7z"].includes(ext)) return "zip";
+    return "file";
+  }
+
+  function formatSize(sizeKB) {
+    if (sizeKB >= 1024) return (sizeKB / 1024).toFixed(sizeKB >= 10240 ? 0 : 1) + " MB";
+    return sizeKB + " KB";
+  }
+
+  function getColorType(type) {
+    return ["pdf", "doc", "img", "xls", "zip"].includes(type) ? type : "file";
+  }
+
+  function getTypeLabel(type) {
+    const map = { pdf: "PDF", doc: "DOC", img: "IMG", xls: "XLS", zip: "ZIP", file: "FILE" };
+    return map[type] || "FILE";
+  }
+
+  function totalSizeKB() {
+    return state.attachments.reduce((sum, item) => sum + item.sizeKB, 0);
+  }
+
+  function renderAttachments() {
+    if (!attachGrid) return;
+    if (state.attachments.length === 0) {
+      attachGrid.innerHTML = '<div class="empty-state">暂无文件。把文件拖进笔记区，或点击上传。</div>';
+    } else {
+      attachGrid.innerHTML = state.attachments.map((file, index) => `
+        <div class="attach-card">
+          <div class="file-top">
+            <div class="file-icon ${getColorType(file.type)}">${getTypeLabel(file.type)}</div>
+            <div class="file-name">
+              <strong title="${file.name}">${file.name}</strong>
+              <small>${formatSize(file.sizeKB)} · ${file.date}</small>
+            </div>
+          </div>
+          <div class="file-tags">
+            <span class="tiny-tag">${file.category}</span>
+            <span class="tiny-tag">${file.from}</span>
+          </div>
+          <div class="attach-actions">
+            <button class="mini-btn" type="button">预览</button>
+            <button class="mini-btn" type="button" data-remove="${index}">移除</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    recentFiles.innerHTML = state.attachments.slice().reverse().slice(0, 6).map(file => `
+      <div class="file-row">
+        <div class="file-left">
+          <div class="folder-badge">${getTypeLabel(file.type)}</div>
+          <div>
+            <strong title="${file.name}">${file.name}</strong>
+            <small>${formatSize(file.sizeKB)} · ${file.date}</small>
+          </div>
+        </div>
+        <span class="tiny-tag">${file.category}</span>
+      </div>
+    `).join("");
+
+    totalFilesEl.textContent = String(state.attachments.length);
+    totalSizeEl.textContent = formatSize(totalSizeKB());
+    storageUsedEl.textContent = formatSize(totalSizeKB());
+
+    const percent = Math.min(100, (totalSizeKB() / (1024 * 50)) * 100); // mock 50MB used view
+    progressEl.style.width = percent.toFixed(1) + "%";
+
+    attachGrid.querySelectorAll("[data-remove]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.dataset.remove);
+        const [removed] = state.attachments.splice(idx, 1);
+        renderAttachments();
+        showToast(`已从当前笔记移除：${removed?.name || "文件"}`);
+        lastActionEl.textContent = "最近操作：移除文件";
+      });
+    });
+  }
+
+  function addFiles(files, from = "拖拽上传") {
+    const added = [];
+    Array.from(files).forEach(file => {
+      const item = {
+        name: file.name,
+        sizeKB: Math.max(1, Math.round(file.size / 1024)),
+        type: extType(file.name),
+        category: ["png","jpg","jpeg","gif","webp","svg"].includes(file.name.split(".").pop()?.toLowerCase() || "") ? "图片" : "文档",
+        from,
+        date: "刚刚"
+      };
+      state.attachments.push(item);
+      added.push(item.name);
+    });
+    renderAttachments();
+    if (added.length) {
+      showToast(`已附加 ${added.length} 个文件到当前笔记`);
+      lastActionEl.textContent = "最近操作：拖拽添加文件";
+    }
+  }
+
+  function showToast(text) {
+    if (!toastEl) return;
+    toastEl.textContent = text;
+    toastEl.classList.add("show");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => toastEl.classList.remove("show"), 2200);
+  }
+
+  function bindDrop(el) {
+    ["dragenter", "dragover"].forEach(evt => {
+      el.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        editorSurface.classList.add("dragover");
+      });
+    });
+    ["dragleave", "dragend"].forEach(evt => {
+      el.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        editorSurface.classList.remove("dragover");
+      });
+    });
+    el.addEventListener("drop", e => {
+      e.preventDefault();
+      e.stopPropagation();
+      editorSurface.classList.remove("dragover");
+      if (e.dataTransfer?.files?.length) {
+        addFiles(e.dataTransfer.files, "拖拽上传");
+      }
+    });
+  }
+
+  [dropZone, editorSurface].forEach(el => el && bindDrop(el));
+
+  [uploadBtn, uploadBtn2, chooseInCallout].forEach(btn => {
+    btn?.addEventListener("click", () => fileInput?.click());
+  });
+
+  fileInput?.addEventListener("change", e => {
+    const files = e.target.files;
+    if (files?.length) addFiles(files, "上传文件");
+    fileInput.value = "";
+  });
+
+  renderAttachments();
+})();
+</script>
+</body>
+</html>

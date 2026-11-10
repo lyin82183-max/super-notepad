@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>随手记</title>
+  <style>
+    html, body { margin: 0; height: 100%; font-family: "Microsoft YaHei", sans-serif; background: #f7fafc; color: #0f172a; }
+    .wrap { display: flex; flex-direction: column; height: 100%; padding: 12px; box-sizing: border-box; gap: 8px; }
+    h1 { font-size: 14px; margin: 0; font-weight: 600; }
+    textarea { flex: 1; width: 100%; resize: none; border: 1px solid #dbe3ef; border-radius: 10px; padding: 10px; font-size: 14px; outline: none; box-sizing: border-box; }
+    .row { display: flex; gap: 8px; justify-content: flex-end; }
+    button { border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
+    .primary { background: #2563eb; color: #fff; }
+    .ghost { background: #e2e8f0; color: #0f172a; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>随手记 · Ctrl+Enter 保存</h1>
+    <textarea id="body" placeholder="写下一笔…" autofocus></textarea>
+    <div class="row">
+      <button class="ghost" id="cancelBtn" type="button">取消</button>
+      <button class="primary" id="saveBtn" type="button">保存</button>
+    </div>
+  </div>
+  <script>
+    const body = document.getElementById("body");
+    async function save() {
+      const text = body.value.trim();
+      if (!text) return;
+      await window.quickNoteApi.save(text);
+      window.close();
+    }
+    document.getElementById("saveBtn").onclick = save;
+    document.getElementById("cancelBtn").onclick = () => window.close();
+    body.addEventListener("keydown", e => {
+      if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); save(); }
+    });
+  </script>
+</body>
+</html>
